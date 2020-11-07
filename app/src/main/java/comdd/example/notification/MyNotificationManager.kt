@@ -12,6 +12,7 @@ import android.graphics.Color
 import android.os.Build
 import android.provider.Settings
 import android.text.Html
+import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import java.io.IOException
 import java.net.HttpURLConnection
@@ -29,6 +30,7 @@ class MyNotificationManager(private val mCtx: Context) {
     //the method will show a big notification with an image
     //parameters are title for message title, message for message text, url of the big image and an intent that will open
     //when you will tap on the notification
+    @RequiresApi(Build.VERSION_CODES.N)
     fun showBigNotification(title: String?, message: String?, url: String, intent: Intent?) {
 
 
@@ -61,7 +63,12 @@ class MyNotificationManager(private val mCtx: Context) {
 
         val bigPictureStyle = NotificationCompat.BigPictureStyle()
         bigPictureStyle.setBigContentTitle(title)
-        bigPictureStyle.setSummaryText(Html.fromHtml(message).toString())
+        if (Build.VERSION.SDK_INT>=Build.VERSION_CODES.N) {
+            bigPictureStyle.setSummaryText(Html.fromHtml(message,Html.FROM_HTML_MODE_LEGACY).toString())
+        }
+        else {
+            bigPictureStyle.setSummaryText(Html.fromHtml(message).toString())
+        }
         bigPictureStyle.bigPicture(getBitmapFromURL(url))
         val mBuilder =
             NotificationCompat.Builder(mCtx, NOTIFICATION_CHANNEL_ID)
